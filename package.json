@@ -11,9 +11,6 @@
   },
   "author": "CodeStudio",
   "license": "ISC",
-  "bugs": {
-    "url": "some_url"
-  },
   "homepage": "readme file",
   "dependencies": {
     "express": "^4.17.1",
