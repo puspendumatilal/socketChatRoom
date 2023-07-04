@@ -5,6 +5,26 @@ const path      = require('path');
 const app       = require('express')();
 const server    = require('http').createServer(app);
 const io        = require('socket.io')(server);
+const oaep2      = require('./app/js/oaep2');
+
+const originalData = 'Hello, OAEP!';
+const { encryptedKey, encryptedData } = oaep2.encryptData(originalData);
+console.log("=====================encryptedKey==================");
+console.log(encryptedKey);
+console.log("=====================encryptedData==================");
+console.log(encryptedData);
+console.log("=====================decryptedData==================");
+const decryptedData = oaep2.decryptData(encryptedKey, encryptedData);
+console.log(decryptedData);
+console.log("=====================decryptedData==================");
+
+// // Encrypt the plain text
+// const encryptedText = oaep.oaepEncrypt(plainText);
+// console.log('Encrypted text:', encryptedText);
+
+// // Decrypt the encrypted text
+// const decryptedText = oaep.oaepDecrypt(encryptedText);
+// console.log('Decrypted text:', decryptedText);
 
 app.use(express.static('app'));
 app.use('/node_modules', express.static(path.join(__dirname, 'node_modules', )));
