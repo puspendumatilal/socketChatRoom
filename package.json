@@ -7,15 +7,14 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
-    "type": "git",
-    "url": "git+https://github.com/gitoutofbox/chat-room-nodejs.git"
+    "type": "git"
   },
   "author": "CodeStudio",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/gitoutofbox/chat-room-nodejs/issues"
+    "url": "some_url"
   },
-  "homepage": "https://github.com/gitoutofbox/chat-room-nodejs#readme",
+  "homepage": "readme file",
   "dependencies": {
     "express": "^4.17.1",
     "mysql": "^2.18.1",
