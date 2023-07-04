@@ -5,7 +5,11 @@ const path      = require('path');
 const app       = require('express')();
 const server    = require('http').createServer(app);
 const io        = require('socket.io')(server);
-const oaep      = require('./app/js/oaep');
+const oaep      = require('./app/js/oaep_func');
+
+const data = "hi";
+const enc = oaep.encryptValue(data);
+console.log(oaep.decryptValue(enc));
 
 app.use(express.static('app'));
 app.use('/node_modules', express.static(path.join(__dirname, 'node_modules', )));
