@@ -25,6 +25,7 @@ const login = () => {
 }
 
 const sendMyMessage = (chatWidowId, fromUser, message) => {
+    // decrypt using private key
     let loggedInUser = JSON.parse(sessionStorage.getItem('user'))
     let meClass = loggedInUser.user_id == fromUser.user_id ? 'me' : '';
 
@@ -41,10 +42,11 @@ const sendMyMessage = (chatWidowId, fromUser, message) => {
 }
 
 const sendMessage = (room) => {
+    let pkpk = `user pk`;
     let loggedInUser = JSON.parse(sessionStorage.getItem('user'))
     let message = $('#'+room).find('.messageText').val();
     $('#'+room).find('.messageText').val('');
-    socket.emit('message', {room: room, message:message, from: loggedInUser});
+    socket.emit('message', {room: room, message:message, from: loggedInUser, to_user_pk: pkpk});
     sendMyMessage(room, loggedInUser, message)
 }
 const openChatWindow = (room) => {

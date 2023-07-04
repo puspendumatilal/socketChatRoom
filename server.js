@@ -10,6 +10,7 @@ const oaep      = require('./app/js/oaep_func');
 const data = "hi";
 const enc = oaep.encryptValue(data);
 console.log(oaep.decryptValue(enc));
+console.log(oaep.publicKey);
 
 app.use(express.static('app'));
 app.use('/node_modules', express.static(path.join(__dirname, 'node_modules', )));
@@ -30,7 +31,7 @@ app.post('/login', (req, res) =>{
         if (error) throw error;
         
         if(results.length == 1) {
-            res.send({status:true, data: results[0]})
+            res.send({status:true, data: results[0], server_pk: oaep.publicKey})
         } else {
             res.send({status:false})
         }
@@ -65,7 +66,7 @@ io.on('connection', socket => {
     });
 
     socket.on('create', function(data) {
-        console.log("create room")
+        console.log("create room", data);
         socket.join(data.room);
         let withSocket = getSocketByUserId(data.withUserId);
         socket.broadcast.to(withSocket.id).emit("invite",{room:data})
@@ -75,6 +76,16 @@ io.on('connection', socket => {
     });
 
     socket.on('message', function(data) {
+        console.log("message 79", data);
+        // this enc will come from FE
+        data.message = oaep.encryptValue(data.message); // Delete this line when FE works
+        console.log("message 82", data);
+        let decMessage = oaep.decryptValue(data.message);
+        console.log("message 84", decMessage);
+        console.log("data.user_pk 84", data.user_pk);
+        let encMessage = oaep.encryptValue(decMessage)//, data.to_user_pk); // this public key will come from FE
+        data.message = encMessage;
+        console.log("message 87", data);
         socket.broadcast.to(data.room).emit('message', data);
     })
 });
