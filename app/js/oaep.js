@@ -1,71 +1,78 @@
-// Import the 'crypto' module for cryptographic operations
-const crypto = require('crypto');
+const crypto = require("crypto")
 
-const publicKeyValue = `-----BEGIN PUBLIC KEY-----
-MFswDQYJKoZIhvcNAQEBBQADSgAwRwJAZSwXc2b+7JPGT6pCfYYWb0LC2oz7xVEP
-P02+jysCZeuRMqAkFXNJK6EUNCpa9BTWzyyr7DjJYK4ijwSUN0+VcQIDAQAB
------END PUBLIC KEY-----`;
+const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
+	modulusLength: 2048,
+})
 
-const privateKeyValue = `-----BEGIN RSA PRIVATE KEY-----
-MIIBOAIBAAJAZSwXc2b+7JPGT6pCfYYWb0LC2oz7xVEPP02+jysCZeuRMqAkFXNJ
-K6EUNCpa9BTWzyyr7DjJYK4ijwSUN0+VcQIDAQABAkAoPmqxn/Wle3617771GWJR
-LZg+wTfhHEZZYv57CpuwmIyngAEadgdRrAewcN4eLIIADona+bQ9AUJ8zkpESlEF
-AiEAoTSF2/qlblxAYqbMHMrWghXExpAkYgxe8uv8HT3xQUMCIQCgqlczGE77NaGD
-L9sSAnKuHu40yhQx/8/2QeUXkPIZOwIgITWNwfSPsf2FMg2EjQXoTOIpKHK3XA+K
-W+briCajlbsCIEXNW+81+3KGvXIag4oSiDJ/+6vxs855PqfVvyt67MPrAiBAjZsR
-25Fm1+u+fYEzP1H6kGh0RWlNobG3F27opqA/vA==
------END RSA PRIVATE KEY-----`;
+console.log(
+	publicKey.export({
+		type: "pkcs1",
+		format: "pem",
+	}),
 
-const publicKey = {
-  modulusLength: 2048,
-  key: publicKeyValue
-};
+	privateKey.export({
+		type: "pkcs1",
+		format: "pem",
+	})
+)
 
-const privateKey = {
-  modulusLength: 2048,
-  key: privateKeyValue
-};
+// This is the data we want to encrypt
+const data = "my secret data"
 
+const encryptedData = crypto.publicEncrypt(
+	{
+		key: publicKey,
+		padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+		oaepHash: "sha256", 
+	},
+	// We convert the data string to a buffer using `Buffer.from`
+	Buffer.from(data)
+)
 
-// OAEP encryption function
-module.exports.oaepEncrypt = (plainText) => {
-  // Generate a random buffer for the padding
-  const padding = crypto.randomBytes(publicKey.modulusLength - 2 * crypto.constants.RSA_PKCS1_OAEP_PADDING);
-  console.log("puspendu")
+console.log("encypted data: ", encryptedData.toString("base64"))
 
-  // Create the encoded message
-  const encodedMessage = Buffer.concat([
-    Buffer.alloc(1, 0x00),
-    padding,
-    Buffer.alloc(1, 0x01),
-    Buffer.from(plainText, 'utf8')
-  ]);
+const decryptedData = crypto.privateDecrypt(
+	{
+		key: privateKey,
+		// In order to decrypt the data, we need to specify the
+		// same hashing function and padding scheme that we used to
+		// encrypt the data in the previous step
+		padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+		oaepHash: "sha256",
+	},
+	encryptedData
+)
 
-  console.log(encodedMessage)
+// The decrypted data is of the Buffer type, which we can convert to a
+// string to reveal the original data
+console.log("decrypted data: ", decryptedData.toString())
 
-  // Encrypt the encoded message using the public key
-  const encryptedMessage = crypto.publicEncrypt({
-    key: publicKey.key,
-    padding: crypto.constants.RSA_PKCS1_OAEP_PADDING
-  }, encodedMessage);
+// Create some sample data that we want to sign
+const verifiableData = "this need to be verified"
 
-  return encryptedMessage.toString('base64');
-}
+// The signature method takes the data we want to sign, the
+// hashing algorithm, and the padding scheme, and generates
+// a signature in the form of bytes
+const signature = crypto.sign("sha256", Buffer.from(verifiableData), {
+	key: privateKey,
+	padding: crypto.constants.RSA_PKCS1_PSS_PADDING,
+})
 
-// OAEP decryption function
-module.exports.oaepDecrypt = (encryptedText) => {
-  // Decrypt the encrypted message using the private key
-  const decryptedMessage = crypto.privateDecrypt({
-    key: privateKey.key,
-    padding: crypto.constants.RSA_PKCS1_OAEP_PADDING
-  }, Buffer.from(encryptedText, 'base64'));
+console.log(signature.toString("base64"))
 
-  // Find the position of the delimiter
-  const delimiterIndex = decryptedMessage.indexOf(0x01);
+// To verify the data, we provide the same hashing algorithm and
+// padding scheme we provided to generate the signature, along
+// with the signature itself, the data that we want to
+// verify against the signature, and the public key
+const isVerified = crypto.verify(
+	"sha256",
+	Buffer.from(verifiableData),
+	{
+		key: publicKey,
+		padding: crypto.constants.RSA_PKCS1_PSS_PADDING,
+	},
+	signature
+)
 
-  // Extract the plain text from the decrypted message
-  const plainText = decryptedMessage.slice(delimiterIndex + 1).toString('utf8');
-
-  return plainText;
-}
-
+// isVerified should be `true` if the signature is valid
+console.log("signature verified: ", isVerified)
