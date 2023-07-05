@@ -38,6 +38,13 @@ app.post('/login', (req, res) =>{
     });
 })
 
+app.get('/public_key', (req, res) =>{
+    // add some basic validation if needed
+    const public_key = oaep.publicKey;
+    const base64String = oaep.getBase64EncodeData(public_key);
+    res.send({server_pk: base64String});
+})
+
 const getSocketByUserId = (userId) =>{
     let socket = '';
     for(let i = 0; i<clientSocketIds.length; i++) {
