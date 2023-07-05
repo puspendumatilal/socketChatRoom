@@ -112,5 +112,16 @@ module.exports.base64UrlSafeDecode = (data) => {
 }
 
 module.exports.serverDecriptionProcess = (data) => {
-	
+	/*
+	// X-E2E-CRYPTO-KEY : encrypt AES key with Server's RSA PublicKey. And then encoded base64 string.
+	1. decode base64
+	2. decript with server private key to get CLIENT AES token
+
+	// X-E2E-CRYPTO-IV: encoding Base64 string.
+	1. decode base64 to get client crypto iv key
+
+	NOTE: by using this AES and IV key decode the client request body
+	*/
+
+
 }
