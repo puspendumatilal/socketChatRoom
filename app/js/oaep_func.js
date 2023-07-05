@@ -72,3 +72,45 @@ module.exports.generateIVKeys = () => {
 	console.log('IV:', iv.toString('hex'));
 	return iv;
 }
+
+module.exports.encryptWithAES = (plaintext, key) => {
+	// key is 32 byte aes key
+	// Generate a random initialization vector (IV)
+	if (key === "") {
+		key = this.generateAESKeys();
+	}
+	const iv = crypto.randomBytes(16);
+
+	// Create a new AES cipher using the provided key and IV
+	const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+
+	// Encrypt the plaintext
+	let encrypted = cipher.update(plaintext, 'utf8', 'base64');
+	encrypted += cipher.final('base64');
+
+	// Combine the IV and the encrypted data
+	const combinedData = iv.toString('base64') + encrypted;
+
+	// Encode the combined data in Base64UrlSafe format
+	const encodedData = this.base64UrlSafeEncode(combinedData);
+
+	return encodedData;
+}
+
+module.exports.base64UrlSafeEncode = (data) => {
+	let encoded = Buffer.from(data, 'utf8').toString('base64');
+	encoded = encoded.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+	return encoded;
+}
+
+module.exports.base64UrlSafeDecode = (data) => {
+	let decoded = data.replace(/-/g, '+').replace(/_/g, '/');
+	while (decoded.length % 4 !== 0) {
+		decoded += '=';
+	}
+	return Buffer.from(decoded, 'base64').toString('utf8');
+}
+
+module.exports.serverDecriptionProcess = (data) => {
+	
+}
