@@ -1,6 +1,6 @@
 const crypto = require("crypto");
 
-module.exports.generateHmac = async (key, message) => {
+async function generateHmac(key, message) {
   // Create a new HMAC object with the provided key and SHA256 hash function
   const hmac = await crypto.createHmac("sha256", key);
   // Update the HMAC object with the message
@@ -27,3 +27,5 @@ module.exports.verifyHmac = async (key, message, receivedDigest) => {
     );
   }
 };
+
+module.exports.generateHmac = generateHmac;
