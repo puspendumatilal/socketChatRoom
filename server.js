@@ -41,7 +41,7 @@ app.post('/login', (req, res) =>{
 app.get('/public_key', (req, res) =>{
     // add some basic validation if needed
     const public_key = oaep.publicKey;
-    const base64String = oaep.getBase64EncodeData(public_key);
+    const base64String = oaep.base64UrlSafeEncode(public_key);
     res.send({server_pk: base64String});
 })
 
@@ -52,6 +52,25 @@ app.post('/democall', (req, res) =>{
     const jsonBody = JSON.parse(jsonStringBody);
     const msg = "I cought you " + jsonBody.name + ", you are " + jsonBody.age + " years old."
     res.send({status: "success", message: msg});
+})
+
+app.post('/demofunc', (req, res) =>{
+    const reqData = req.body.data;
+    let data = "blank"
+    switch (req.body.case) {
+        case 1: data = oaep.base64UrlSafeEncode(reqData); break;
+        case 2: data = oaep.base64UrlSafeDecode(reqData); break;
+        case 3: data = oaep.generateAESKeys(); break;
+        case 4: data = oaep.generateIVKeys(); break;
+        case 5: data = oaep.encryptValue(reqData, req.body.publicKey); break;
+        case 6: data = oaep.decryptValue(reqData); break;
+        case 7: data = oaep.encryptWithAES(reqData, req.body.aeskey, req.body.iv); break;
+        case 8: data = oaep.decryptWithAES(reqData, req.body.aeskey, req.body.iv); break;
+        case 9: data = JSON.parse(reqData);
+        case 10: data = JSON.stringify(reqData);
+    }
+    console.log(data);
+    res.send({status: "success", data: data});
 })
 
 const getSocketByUserId = (userId) =>{

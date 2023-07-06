@@ -61,25 +61,42 @@ module.exports.getBase64DecodeData = (data) => {
 
 module.exports.generateAESKeys = () => {
 	// Generate AES key (32 bytes)
-	const aesKey = crypto.randomBytes(32);
+	let aesKey = crypto.randomBytes(32);
+	aesKey = aesKey.toString('hex');
 	console.log('AES Key:', aesKey.toString('hex'));
 	return aesKey;
 }
 
 module.exports.generateIVKeys = () => {
 	// Generate IV (16 bytes)
-	const iv = crypto.randomBytes(16);
+	let iv = crypto.randomBytes(16);
+	iv = iv.toString('hex')
 	console.log('IV:', iv.toString('hex'));
 	return iv;
 }
 
-module.exports.encryptWithAES = (plaintext, key) => {
+function hexToBytes(hexString) {
+	const bytes = new Uint8Array(hexString.length / 2);
+	for (let i = 0; i < hexString.length; i += 2) {
+	  bytes[i / 2] = parseInt(hexString.substr(i, 2), 16);
+	}
+	return bytes;
+  }
+
+module.exports.encryptWithAES = (plaintext = "pppp", key = "", iv = "") => {
 	// key is 32 byte aes key
 	// Generate a random initialization vector (IV)
 	if (key === "") {
-		key = this.generateAESKeys();
+		key = crypto.randomBytes(32);
+		key = key.toString('hex');
+		key = hexToBytes(key);
 	}
-	const iv = crypto.randomBytes(16);
+	console.log(key);
+	if (iv === "") {
+		iv = crypto.randomBytes(16);
+		iv = iv.toString('hex');
+		iv = hexToBytes(iv);
+	}
 
 	// Create a new AES cipher using the provided key and IV
 	const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
