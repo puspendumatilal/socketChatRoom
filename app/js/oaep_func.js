@@ -18,10 +18,7 @@ privateKey = privateKey.export({
 
 // This is the data we want to encrypt
 module.exports.encryptValue = (data, publicKey = this.publicKey) => {
-	console.log(data);
-	console.log(publicKey);
-	console.log(typeof publicKey)
-	const encryptedData = crypto.publicEncrypt(
+	let encryptedData = crypto.publicEncrypt(
 		{
 			key: publicKey,
 			padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
@@ -31,11 +28,13 @@ module.exports.encryptValue = (data, publicKey = this.publicKey) => {
 		Buffer.from(data)
 	)
 
-	// console.log("encypted data: ", encryptedData.toString("base64"))
+	console.log("encypted data: ", encryptedData.toString('hex'))
+	encryptedData = bufferToBase64(encryptedData);
 	return encryptedData;
 }
 
 module.exports.decryptValue = (encryptedData) => {
+	encryptedData = base64ToBuffer(encryptedData);
 	const decryptedData = crypto.privateDecrypt(
 		{
 			key: privateKey,
@@ -45,6 +44,16 @@ module.exports.decryptValue = (encryptedData) => {
 		encryptedData
 	)
 	return decryptedData.toString();
+}
+
+// Convert Buffer to Base64
+function bufferToBase64(buffer) {
+	return buffer.toString('base64');
+}
+
+// Convert Base64 to Buffer
+function base64ToBuffer(base64String) {
+	return Buffer.from(base64String, 'base64');
 }
 
 module.exports.getBase64EncodeData = (data) => {
@@ -78,10 +87,10 @@ module.exports.generateIVKeys = () => {
 function hexToBytes(hexString) {
 	const bytes = new Uint8Array(hexString.length / 2);
 	for (let i = 0; i < hexString.length; i += 2) {
-	  bytes[i / 2] = parseInt(hexString.substr(i, 2), 16);
+		bytes[i / 2] = parseInt(hexString.substr(i, 2), 16);
 	}
 	return bytes;
-  }
+}
 
 module.exports.encryptWithAES = (plaintext = "", key = "", iv = "") => {
 	// key is 32 byte aes key
@@ -147,7 +156,7 @@ module.exports.decryptWithAES = (encodedbody, client_aes_key, client_iv) => {
 	return decryptedData
 }
 
-module.exports.serverSideDecriptionProcess = (encodedBody,crypto_key_data, crypto_IV_data) => {
+module.exports.serverSideDecriptionProcess = (encodedBody, crypto_key_data, crypto_IV_data) => {
 	/*
 	// X-E2E-CRYPTO-KEY : encrypt AES key with Server's RSA PublicKey. And then encoded base64 string.
 	1. decode base64
