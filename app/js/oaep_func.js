@@ -83,18 +83,25 @@ function hexToBytes(hexString) {
 	return bytes;
   }
 
-module.exports.encryptWithAES = (plaintext = "pppp", key = "", iv = "") => {
+module.exports.encryptWithAES = (plaintext = "", key = "", iv = "") => {
 	// key is 32 byte aes key
 	// Generate a random initialization vector (IV)
+	if (!plaintext) {
+		plaintext = "{\"name\":\"pulu\",\"age\":3}";
+	}
 	if (key === "") {
 		key = crypto.randomBytes(32);
 		key = key.toString('hex');
+		key = hexToBytes(key);
+	} else {
 		key = hexToBytes(key);
 	}
 	console.log(key);
 	if (iv === "") {
 		iv = crypto.randomBytes(16);
 		iv = iv.toString('hex');
+		iv = hexToBytes(iv);
+	} else {
 		iv = hexToBytes(iv);
 	}
 
