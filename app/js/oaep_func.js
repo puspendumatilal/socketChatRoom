@@ -111,7 +111,19 @@ module.exports.base64UrlSafeDecode = (data) => {
 	return Buffer.from(decoded, 'base64').toString('utf8');
 }
 
-module.exports.serverDecriptionProcess = (data) => {
+module.exports.decryptWithAES = (encodedbody, client_aes_key, client_iv) => {
+
+	// Create a new AES decipher using the key and IV
+	const decipher = crypto.createDecipheriv('aes-256-cbc', client_aes_key, client_iv);
+
+	// Decrypt the data
+	let decryptedData = decipher.update(encodedbody, 'base64', 'utf8');
+	decryptedData += decipher.final('utf8');
+
+	return decryptedData
+}
+
+module.exports.serverSideDecriptionProcess = (encodedBody,crypto_key_data, crypto_IV_data) => {
 	/*
 	// X-E2E-CRYPTO-KEY : encrypt AES key with Server's RSA PublicKey. And then encoded base64 string.
 	1. decode base64
@@ -122,6 +134,14 @@ module.exports.serverDecriptionProcess = (data) => {
 
 	NOTE: by using this AES and IV key decode the client request body
 	*/
+
+	const base64DecodedAES = this.base64UrlSafeDecode(crypto_key_data); // is it is urlsafe encode then use urlsafe decode.
+	const clientAES = this.decryptValue(base64DecodedAES);
+	const clientIV = this.base64UrlSafeDecode(crypto_IV_data);
+
+	const decryptedData = this.decryptValue(encodedBody, clientAES, clientIV);
+
+
 
 
 }

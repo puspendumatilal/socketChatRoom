@@ -45,6 +45,15 @@ app.get('/public_key', (req, res) =>{
     res.send({server_pk: base64String});
 })
 
+app.post('/democall', (req, res) =>{
+    const encriptedKey = req.headers.X-E2E-CRYPTO-KEY; 
+    const encriptedClientIV = req.headers.X-E2E-CRYPTO-KEY; 
+    const jsonStringBody = oaep.serverSideDecriptionProcess(req.body.data, encriptedKey, encriptedClientIV);
+    const jsonBody = JSON.parse(jsonStringBody);
+    const msg = "I cought you " + jsonBody.name + ", you are " + jsonBody.age + " years old."
+    res.send({status: "success", message: msg});
+})
+
 const getSocketByUserId = (userId) =>{
     let socket = '';
     for(let i = 0; i<clientSocketIds.length; i++) {
