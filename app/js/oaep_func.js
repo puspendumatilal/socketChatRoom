@@ -140,8 +140,6 @@ module.exports.serverSideDecriptionProcess = (encodedBody,crypto_key_data, crypt
 	const clientIV = this.base64UrlSafeDecode(crypto_IV_data);
 
 	const decryptedData = this.decryptValue(encodedBody, clientAES, clientIV);
-
-
-
+	return decryptedData;
 
 }
