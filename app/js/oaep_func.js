@@ -18,9 +18,9 @@ privateKey = privateKey.export({
 
 // This is the data we want to encrypt
 module.exports.encryptValue = (data, publicKey = this.publicKey) => {
-    console.log(data);
-    console.log(publicKey);
-    console.log(typeof publicKey)
+   // console.log(data);
+    //console.log(publicKey);
+    //console.log(typeof publicKey)
 	const encryptedData = crypto.publicEncrypt(
 		{
 			key: publicKey,
