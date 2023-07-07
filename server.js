@@ -32,12 +32,14 @@ const connection = mysql.createConnection({
 
 app.post("/login", (req, res) => {
   connection.query(
-    `SELECT user_name, user_id, user_full_name, user_image from chat_users where user_name="${req.body.username}" AND user_password="${req.body.password}"`,
+    `SELECT user_name, user_id, user_full_name, user_image 
+    from chat_users where user_name="${req.body.username}"
+    AND user_password="${req.body.password}"`,
     function (error, results, fields) {
       if (error) throw error;
 
       if (results.length == 1) {
-        res.send({ status: true, data: results[0], server_pk: oaep.publicKey });
+        res.send({ status: true, data: results[0], server_pk: oaep.publicKey,hmac_key:'dummyHMACKey' });
       } else {
         res.send({ status: false });
       }
@@ -84,9 +86,10 @@ io.on("connection", (socket) => {
   });
 
   socket.on("message", async function (data) {
+    console.log("Data======",data);
+    console.log("hmac data======",hmacAuth)
     // this enc will come from FE
     const digest = await hmacAuth.generateHmac(secret_Key, data.message);
-
     data.message = oaep.encryptValue(data.message); // Delete this line when FE works
     
     let decMessage = oaep.decryptValue(data.message);

@@ -8,9 +8,9 @@ async function generateHmac(key, message) {
   // Get the digest (the authentication code) in hexadecimal format
   const digest = hmac.digest("hex");
   return digest;
-};
+}
 
-module.exports.verifyHmac = async (key, message, receivedDigest) => {
+const verifyHmac = async(key, message, receivedDigest)=>{
   // Generate a new digest based on the provided key and message
   const expectedDigest = await generateHmac(key, message);
   // Compare the expected digest with the received digest
@@ -28,4 +28,4 @@ module.exports.verifyHmac = async (key, message, receivedDigest) => {
   }
 };
 
-module.exports.generateHmac = generateHmac;
+module.exports = { generateHmac, verifyHmac};
