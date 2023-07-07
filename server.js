@@ -52,7 +52,7 @@ app.post('/democall', (req, res) =>{
     // return res.send({val: encriptedKey});
     const encriptedClientIV = req.headers.x_e2e_crypto_iv; 
     const jsonStringBody = oaep.serverSideDecriptionProcess(req.body.data, encriptedKey, encriptedClientIV);
-    return res.send({val: jsonStringBody});
+    // return res.send({val: jsonStringBody});
     const jsonBody = JSON.parse(jsonStringBody);
     const msg = "I cought you " + jsonBody.name + ", you are " + jsonBody.age + " years old."
     res.send({status: "success", message: msg});
