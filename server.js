@@ -10,7 +10,9 @@ const oaep      = require('./app/js/oaep_func');
 const data = "hi";
 const enc = oaep.encryptValue(data);
 console.log(oaep.decryptValue(enc));
-console.log(oaep.publicKey);
+// console.log(oaep.publicKey);
+// console.log(oaep.privateKey);
+
 
 app.use(express.static('app'));
 app.use('/node_modules', express.static(path.join(__dirname, 'node_modules', )));
@@ -46,9 +48,11 @@ app.get('/public_key', (req, res) =>{
 })
 
 app.post('/democall', (req, res) =>{
-    const encriptedKey = req.headers.X-E2E-CRYPTO-KEY; 
-    const encriptedClientIV = req.headers.X-E2E-CRYPTO-KEY; 
+    const encriptedKey = req.headers.x_e2e_crypto_key; 
+    // return res.send({val: encriptedKey});
+    const encriptedClientIV = req.headers.x_e2e_crypto_iv; 
     const jsonStringBody = oaep.serverSideDecriptionProcess(req.body.data, encriptedKey, encriptedClientIV);
+    return res.send({val: jsonStringBody});
     const jsonBody = JSON.parse(jsonStringBody);
     const msg = "I cought you " + jsonBody.name + ", you are " + jsonBody.age + " years old."
     res.send({status: "success", message: msg});
