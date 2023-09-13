@@ -27,7 +27,7 @@ export const verifyJWT = async (
   if (typeof token === 'string' && token.includes('Bearer ')) {
     token = token.replace('Bearer ', '')
   } else {
-    return res.send({status: 'fail', message: 'Token format fails'})
+    return res.send({status: 'error', message: 'Token format fails'})
   }
 
   try {
@@ -35,16 +35,17 @@ export const verifyJWT = async (
       algorithms: ['RS256'],
       maxAge: '15m',
     }) as JsonObject
-    const {rows} = await pgPool.query('SELECT * FROM users where id = $1', [
-      decodedJson.id,
-    ])
+    const {rows} = await pgPool.query(
+      'SELECT * FROM users where id = $1 AND status = $2',
+      [decodedJson.id, 'active'],
+    )
     if (rows.length === 0) {
       return res.send({status: 'error', message: 'user not found'})
     }
     next()
   } catch (error) {
     return res.send({
-      status: 'fail',
+      status: 'error',
       message: 'Token verification fails',
       data: error,
     })

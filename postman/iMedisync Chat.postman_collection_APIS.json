@@ -1,0 +1,447 @@
+{
+	"info": {
+		"_postman_id": "ac72873a-2180-40b5-b085-355949ef0c72",
+		"name": "iMedisync Chat ENC",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27643323"
+	},
+	"item": [
+		{
+			"name": "backupchat",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "x_e2e_crypto_key",
+						"value": "{{x_e2e_crypto_key}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"roomType\" : \"Private\",\r\n    \"backupJson\": \"this is encripted chat\",\r\n    \"org\": \"charminaar club\",\r\n    \"roomId\": \"64e2e689f9f1a9c9ae5dfe28\",\r\n    \"roomName\": \"my2ndPrGroup22\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url_api}}/backupchat",
+					"host": [
+						"{{url_api}}"
+					],
+					"path": [
+						"backupchat"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getbackupchat",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "x_e2e_crypto_key",
+						"value": "{{x_e2e_crypto_key}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"roomId\" : \"64e2e689f9f1a9c9ae5dfe28\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url_api}}/getbackupchat",
+					"host": [
+						"{{url_api}}"
+					],
+					"path": [
+						"getbackupchat"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "initchat",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "x_e2e_crypto_key",
+						"value": "{{x_e2e_crypto_key}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"roomType\": \"Private\",\r\n    \"roomName\": \"myPrivateGroup\",\r\n    \"privategroupidlist\": [\"2343\", \"8879\"],\r\n    \"owner\": {\r\n        \"concent\": false,\r\n        \"org\": \"abc org\",\r\n        \"username\": \"Puspendu\",\r\n        \"role\": \"Admin\",\r\n        \"userId\": \"1234\"\r\n    },\r\n    \"participant\": [\r\n        {\r\n            \"username\": \"Meghadrita\",\r\n            \"role\": \"CREW\",\r\n            \"userId\": \"2343\",\r\n            \"org\": \"abc org\"\r\n        },\r\n        {\r\n            \"username\": \"Matilal\",\r\n            \"role\": \"CREW\",\r\n            \"userId\": \"8879\",\r\n            \"org\": \"abc org\"\r\n        }\r\n    ],\r\n    \"created_by\": \"1234\",\r\n    \"org\": \"abc org\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url_api}}/initchat",
+					"host": [
+						"{{url_api}}"
+					],
+					"path": [
+						"initchat"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "addnewuser",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "x_e2e_crypto_key",
+						"value": "{{x_e2e_crypto_key}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user_Id\": \"2343\",\r\n    \"user_Name\": \"Meghadrita\",\r\n    \"user_Role\": \"CREW\",\r\n    \"user_Image\": \"myImg.jpg\",\r\n    \"user_Status\": \"Active\",\r\n    \"user_Online\": true,\r\n    \"user_LastSeen\": \"2023-07-19T15:04:25.079+00:00\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url_api}}/addnewuser",
+					"host": [
+						"{{url_api}}"
+					],
+					"path": [
+						"addnewuser"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getonlineusers",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "x_e2e_crypto_key",
+						"value": "{{x_e2e_crypto_key}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user_Id\": \"1234\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url_api}}/getonlineusers",
+					"host": [
+						"{{url_api}}"
+					],
+					"path": [
+						"getonlineusers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getchatroomsbyuser",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "x_e2e_crypto_key",
+						"value": "{{x_e2e_crypto_key}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user_Id\": \"2233\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url_api}}/getchatroomsbyuser",
+					"host": [
+						"{{url_api}}"
+					],
+					"path": [
+						"getchatroomsbyuser"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "searchchatroom",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "x_e2e_crypto_key",
+						"value": "{{x_e2e_crypto_key}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"skip\":0,\r\n    \"take\":10,\r\n    \"searchString\": \"My\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url_api}}/search/chatroom",
+					"host": [
+						"{{url_api}}"
+					],
+					"path": [
+						"search",
+						"chatroom"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "searchuserlist",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "x_e2e_crypto_key",
+						"value": "{{x_e2e_crypto_key}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"skip\": 0,\r\n    \"take\":10,\r\n    \"searchString\": \"pu\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url_api}}/search/userlist",
+					"host": [
+						"{{url_api}}"
+					],
+					"path": [
+						"search",
+						"userlist"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "updatenotification",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "x_e2e_crypto_key",
+						"value": "{{x_e2e_crypto_key}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user_Id\": \"2231\",\r\n    \"notification_banner\": true,\r\n    \"notification_sound\": false\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url_api}}/settings/updatenotification",
+					"host": [
+						"{{url_api}}"
+					],
+					"path": [
+						"settings",
+						"updatenotification"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "updatetheme",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "x_e2e_crypto_key",
+						"value": "{{x_e2e_crypto_key}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user_Id\": \"2231\",\r\n    \"theme\": \"Dark\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url_api}}/settings/updatetheme",
+					"host": [
+						"{{url_api}}"
+					],
+					"path": [
+						"settings",
+						"updatetheme"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"",
+					"var rawData = JSON.stringify({",
+					"  \"data\": JSON.stringify(pm.request.body.raw),",
+					"  \"case\": 13,",
+					"  \"aeskey\": \"rpdxHpIj2Gc108Chp639wMrkTRVEdD8G\"",
+					"});",
+					"",
+					"",
+					"const options = {",
+					"    url: \"http://localhost:8082/keys/v1/demofunc\",",
+					"    method: 'POST',",
+					"    header: { 'content-type': 'application/json' },",
+					"    body: {",
+					"        mode: 'raw',",
+					"        raw: rawData",
+					"    }",
+					"};",
+					"",
+					"pm.sendRequest(options, function (err, res) {",
+					"    var jsonData = res.json();",
+					"    if (err) {",
+					"        console.log(err);",
+					"    }",
+					"    else {",
+					"        console.log(\"PUSPENDU\");",
+					"        console.log(jsonData);",
+					"        pm.variables.set(\"data123\", jsonData.data);",
+					"        pm.request.body.raw = {",
+					"            \"data\":jsonData.data",
+					"        }",
+					"    }",
+					"});",
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

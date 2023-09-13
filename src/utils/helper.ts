@@ -27,3 +27,11 @@ export const isEmpty = (parameter: any) => {
   // Parameter is not empty
   return false
 }
+
+export const parseJSON = <T>(jsonString: string): T => {
+  try {
+    return JSON.parse(jsonString) as T
+  } catch (error) {
+    throw new Error(`Error parsing JSON: ${error}`)
+  }
+}

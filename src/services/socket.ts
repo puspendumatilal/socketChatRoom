@@ -1,10 +1,9 @@
 import {Socket} from 'socket.io'
 import * as hmac from '../middleware/hmacAuth'
+import * as socketHelper from '../utils/socket_helper'
+import {RoomTypeEnum} from '../common/enums'
 
 // online user using mongo realtime
-// public group
-// private group
-// 1 to 1 chat
 
 type myObj = {
   userId: String
@@ -26,7 +25,7 @@ const getSocketByUserId = (userId: String) => {
 }
 
 /* socket function starts */
-module.exports.socketFunc = (socket: Socket, io: any) => {
+export const socketFunc = (socket: Socket, io: any) => {
   console.log('conected')
   socket.on('disconnect', () => {
     console.log('disconnected')
@@ -35,143 +34,224 @@ module.exports.socketFunc = (socket: Socket, io: any) => {
   })
 
   console.log('connected user ==>>', connectedUsers.length)
-  // socket.on("loggedin", function (user) {
-  //     clientSocketIds.push({ socket: socket, userId: user.user_id });
-  //     connectedUsers = connectedUsers.filter(
-  //         (item) => item.user_id != user.user_id
-  //     );
-  //     connectedUsers.push({ ...user, socketId: socket.id });
-  //     io.emit("updateUserList", connectedUsers);
-  // });
 
-  socket.on('createpublicroom', function (data) {
+  socket.on('createpublicroom', async function (data) {
     console.log('createpublicroom', data)
-    const isAuthenticated = hmac.verifySocketHmac(
-      data.x_e2e_crypto_key,
-      data.x_e2e_crypto_iv,
-      socket,
-    )
+    const isAuthenticated = await hmac.verifySocketHmac(socket)
     if (isAuthenticated) {
-      socket.join(data.room)
+      socket.join(data.room.id)
     } else {
       socket.broadcast
-        .to(data.room)
+        .to(data.room.id)
         .emit('authentication', 'Authentication Fails')
     }
   })
 
-  socket.on('createprivateroom', function (data) {
+  socket.on('createprivateroom', async function (data) {
     console.log('createprivateroom', data)
-    const isAuthenticated = hmac.verifySocketHmac(
-      data.x_e2e_crypto_key,
-      data.x_e2e_crypto_iv,
-      socket,
-    )
+    const isAuthenticated = await hmac.verifySocketHmac(socket)
     if (isAuthenticated) {
-      socket.join(data.room)
+      socket.join(data.room.id)
     } else {
       socket.broadcast
-        .to(data.room)
+        .to(data.room.id)
         .emit('authentication', 'Authentication Fails')
+      socket.disconnect(true)
     }
   })
 
-  socket.on('create', function (data) {
+  socket.on('create', async function (data) {
+    console.log(socket.id)
+    const isAuthenticated = await hmac.verifySocketHmac(socket)
+    console.log('create', data)
+    if (isAuthenticated) {
+      socket.join(data.room.id)
+      // socket.broadcast.to(data.room.id).emit('data', data)
+    } else {
+      socket.broadcast
+        .to(data.room.id)
+        .emit('authentication', 'Authentication Fails')
+      socket.disconnect(true)
+    }
+  })
+
+  socket.on('joinRoom', async function (data) {
+    console.log('joinRoom', data)
+    const isAuthenticated = await hmac.verifySocketHmac(socket)
+    if (isAuthenticated) {
+      if (data.room.type === RoomTypeEnum.PRIVATE) {
+        if (socketHelper.verifyPrivateRoomMember(data)) {
+          socket.join(data.room.id)
+        } else {
+          socket.broadcast
+            .to(data.room.id)
+            .emit(
+              'authentication',
+              'Authentication Fails, you are not allowed to enter this room',
+            )
+        }
+      }
+      socket.join(data.room.id)
+      socket.broadcast.to(data.room.id).emit('data', data)
+    } else {
+      socket.broadcast
+        .to(data.room.id)
+        .emit('authentication', 'Authentication Fails')
+      socket.disconnect(true)
+    }
+  })
+
+  socket.on('message', async function (data) {
+    console.log('message', data)
+    const isAuthenticated = await hmac.verifySocketHmac(socket)
+    if (isAuthenticated) {
+      socket.broadcast.to(data.room.id).emit('data', data)
+    } else {
+      socket.broadcast
+        .to(data.room.id)
+        .emit('authentication', 'Authentication Fails')
+      socket.disconnect(true)
+    }
+  })
+
+  socket.on('online', async function (data) {
+    console.log('online', data)
+    const isAuthenticated = await hmac.verifySocketHmac(socket)
+    if (isAuthenticated) {
+      socketHelper.updateUserOnlineOffline(data)
+    } else {
+      socket.broadcast
+        .to(data.room.id)
+        .emit('authentication', 'Authentication Fails')
+      socket.disconnect(true)
+    }
+  })
+
+  socket.on('typing', async function (data) {
+    console.log('typing', data)
+    const isAuthenticated = await hmac.verifySocketHmac(socket)
+    if (isAuthenticated) {
+      socket.broadcast.to(data.room.id).emit('data', data)
+    } else {
+      socket.broadcast
+        .to(data.room.id)
+        .emit('authentication', 'Authentication Fails')
+      socket.disconnect(true)
+    }
+  })
+
+  socket.on('read', async function (data) {
+    console.log('read', data)
+    const isAuthenticated = await hmac.verifySocketHmac(socket)
+    if (isAuthenticated) {
+      socket.broadcast.to(data.room.id).emit('data', data)
+    } else {
+      socket.broadcast
+        .to(data.room.id)
+        .emit('authentication', 'Authentication Fails')
+      socket.disconnect(true)
+    }
+  })
+
+  socket.on('offline', async function (data) {
+    console.log('offline', data)
+    const isAuthenticated = await hmac.verifySocketHmac(socket)
+    if (isAuthenticated) {
+      console.log('AUTN')
+      // update online user list when someone is offline
+      socketHelper.updateUserOnlineOffline(data)
+    } else {
+      socket.broadcast
+        .to(data.room.id)
+        .emit('authentication', 'Authentication Fails')
+      socket.disconnect(true)
+    }
+  })
+
+  socket.on('userLeft', async function (data) {
     console.log(socket.id)
     console.log('create', data)
-    const isAuthenticated = hmac.verifySocketHmac(
-      data.x_e2e_crypto_key,
-      data.x_e2e_crypto_iv,
-      socket,
-    )
+    const isAuthenticated = await hmac.verifySocketHmac(socket)
     if (isAuthenticated) {
-      socket.join(data.room)
-      let withSocket = getSocketByUserId(data.withUserId)
-      socket.broadcast.to(withSocket.id).emit('invite', {room: data})
+      socket.broadcast.to(data.room.id).emit('data', data)
+      if (!socketHelper.changeUserParticipationStatus(data)) {
+        console.log('Socket fails for USERLEFT - ', data)
+      }
     } else {
       socket.broadcast
-        .to(data.room)
+        .to(data.room.id)
         .emit('authentication', 'Authentication Fails')
+      socket.disconnect(true)
     }
   })
 
-  socket.on('joinRoom', function (data) {
-    console.log('joinRoom', data)
-    const isAuthenticated = hmac.verifySocketHmac(
-      data.x_e2e_crypto_key,
-      data.x_e2e_crypto_iv,
-      socket,
-    )
+  socket.on('userRemoved', async function (data) {
+    console.log(socket.id)
+    console.log('create', data)
+    const isAuthenticated = await hmac.verifySocketHmac(socket)
     if (isAuthenticated) {
-      socket.join(data.room)
+      socket.broadcast.to(data.room.id).emit('data', data)
+      if (!socketHelper.changeUserParticipationStatus(data)) {
+        console.log('Socket fails for USERREMOVED - ', data)
+      }
     } else {
       socket.broadcast
-        .to(data.room)
+        .to(data.room.id)
         .emit('authentication', 'Authentication Fails')
+      socket.disconnect(true)
     }
   })
 
-  socket.on('message', function (data) {
-    console.log('message', data)
-    const isAuthenticated = hmac.verifySocketHmac(
-      data.x_e2e_crypto_key,
-      data.x_e2e_crypto_iv,
-      socket,
-    )
+  socket.on('Declined', async function (data) {
+    console.log(socket.id)
+    console.log('create', data)
+    const isAuthenticated = await hmac.verifySocketHmac(socket)
     if (isAuthenticated) {
-      socket.broadcast.to(data.room).emit('message', data.message)
+      socket.broadcast.to(data.room.id).emit('data', data)
+      if (!socketHelper.changeUserParticipationStatus(data)) {
+        console.log('Socket fails for USER Declined - ', data)
+      }
     } else {
       socket.broadcast
-        .to(data.room)
+        .to(data.room.id)
         .emit('authentication', 'Authentication Fails')
+      socket.disconnect(true)
     }
   })
 
-  socket.on('online', function (data) {
-    console.log('online', data)
-    const isAuthenticated = hmac.verifySocketHmac(
-      data.x_e2e_crypto_key,
-      data.x_e2e_crypto_iv,
-      socket,
-    )
+  socket.on('Accepted', async function (data) {
+    console.log(socket.id)
+    console.log('create', data)
+    const isAuthenticated = await hmac.verifySocketHmac(socket)
     if (isAuthenticated) {
-      // update user then user online
+      socket.broadcast.to(data.room.id).emit('data', data)
+      if (!socketHelper.changeUserParticipationStatus(data)) {
+        console.log('Socket fails for USER Accepted - ', data)
+      }
     } else {
+      console.log('ERROR CASE')
       socket.broadcast
-        .to(data.room)
+        .to(data.room.id)
         .emit('authentication', 'Authentication Fails')
+      socket.disconnect(true)
     }
   })
 
-  socket.on('typing', function (data) {
-    console.log('online', data)
-    const isAuthenticated = hmac.verifySocketHmac(
-      data.x_e2e_crypto_key,
-      data.x_e2e_crypto_iv,
-      socket,
-    )
+  socket.on('Blocked', async function (data) {
+    console.log(socket.id)
+    console.log('create', data)
+    const isAuthenticated = await hmac.verifySocketHmac(socket)
     if (isAuthenticated) {
-      // update user then user typing
+      socket.broadcast.to(data.room.id).emit('data', data)
+      socket.leave(data.room.id)
+      if (!socketHelper.changeUserParticipationStatus(data)) {
+        console.log('Socket fails for USER BLOCKED - ', data)
+      }
     } else {
       socket.broadcast
-        .to(data.room)
+        .to(data.room.id)
         .emit('authentication', 'Authentication Fails')
-    }
-  })
-
-  socket.on('offline', function (data) {
-    console.log('offline', data)
-    const isAuthenticated = hmac.verifySocketHmac(
-      data.x_e2e_crypto_key,
-      data.x_e2e_crypto_iv,
-      socket,
-    )
-    if (isAuthenticated) {
-      // update online user list when someone is offline / close chat app
-    } else {
-      socket.broadcast
-        .to(data.room)
-        .emit('authentication', 'Authentication Fails')
+      socket.disconnect(true)
     }
   })
 }

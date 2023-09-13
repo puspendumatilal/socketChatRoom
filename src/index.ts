@@ -5,19 +5,24 @@ import {Server} from 'socket.io'
 import {instrument} from '@socket.io/admin-ui'
 import mongoose from 'mongoose'
 import router from './routes/route'
+import keyRouter from './routes/tokenroute'
+import {socketFunc} from './services/socket'
+import dotenv from 'dotenv'
+dotenv.config()
 
 const app = express()
-const DATABASE_URL =
-  'mongodb+srv://puspendumatilal:i51jYlkHF5K5WL0l@cluster0.hzmt4kg.mongodb.net/iSyncChat?retryWrites=true&w=majority'
+const DATABASE_URL = process.env.MONGODB_URL
 
 app.use(bodyParser.json())
 const httpServer = http.createServer(app)
 
 app.use('/api/v1', router)
+app.use('/keys/v1', keyRouter)
+
 const io = new Server(httpServer, {
   pingTimeout: 60000,
   cors: {
-    origin: ['http://localhost:8085', 'https://admin.socket.io'],
+    origin: ['http://localhost:8082', 'https://admin.socket.io'],
   },
 })
 
@@ -30,11 +35,11 @@ io.use((socket, next) => {
   next()
 }).on('connection', (socket) => {
   console.log('socket io connected successfully. ===')
-  // SocketServer.socketFunc(socket, io);
+  socketFunc(socket, io)
 })
 
-httpServer.listen(8085, () => {
-  console.log('Server running on http://localhost:8085/')
+httpServer.listen(8082, () => {
+  console.log('Server running on http://localhost:8082/')
 })
 
 mongoose.Promise = Promise

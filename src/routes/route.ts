@@ -1,18 +1,35 @@
-import express from 'express'
-const router = express.Router()
+import {Router} from 'express'
+import {verifyJWT} from '../middleware/jwtAuth'
+import {setReqBody} from '../middleware/bodyDecription'
+import * as ChatController from '../controllers/chatcontroller'
+import * as UserController from '../controllers/usercontroller'
+import * as SearchController from '../controllers/searchcontroller'
+import * as UserSettingsController from '../controllers/usersettingscontroller'
 
-// const AuthController = require("../controllers/auth.controller");
-// const hmacAuth = require("../middleware/hmacAuth");
-// const jwtAuth = require("../middleware/jwtAuth")
+const router: Router = Router()
+router.use(verifyJWT)
+router.use(setReqBody)
 
-//API related to chat flows
-// router.route("/gettoken").post(trimRequest.all, hmacAuth.verifyHmac, AuthController.getToken);
-// router.route("/initchat").post(trimRequest.all, jwtAuth.verifyJWT, AuthController.initChat);
-// router.route("/backupchat").post(trimRequest.all, jwtAuth.verifyJWT, AuthController.backupChat);
-// router.route("/getbackupchat").post(trimRequest.all, jwtAuth.verifyJWT, AuthController.getBackupChat);
-// /changeuserstatus api using mongo realtime
-// /fetchonlineusers
+router.post('/initchat', ChatController.initChat)
+router.post('/backupchat', ChatController.backupChat)
+router.post('/getbackupchat', ChatController.getBackupChat)
 
-// router.route("/demofunc").post(trimRequest.all, AuthController.demoFunc);
+// User Controller API
+router.post('/addnewuser', UserController.addNewUserToChatlist)
+router.post('/getonlineusers', UserController.getOnlineUsers)
+router.post('/getchatroomsbyuser', UserController.getChatRoomsByUser)
+
+router.post('/search/userlist', SearchController.searchUserList)
+router.post('/search/chatroom', SearchController.searchChatRoom)
+
+// Settings api
+router.post(
+  '/settings/updatenotification',
+  UserSettingsController.updateNotificationSettings,
+)
+router.post(
+  '/settings/updatetheme',
+  UserSettingsController.updateThemePreference,
+)
 
 export default router
