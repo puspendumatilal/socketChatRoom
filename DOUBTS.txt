@@ -1,0 +1,12 @@
+1. is there any validation needed in terms of who will be able to initiate the chat
+eg. we need to verify the person role to create a new chat
+
+In current scenario I am assming that anyone can join any room with room id.
+
+2. Is this chat like random single chat or 
+
+
+
+
+JUNGBAY:
+1 all api auth user Bearer Token.
